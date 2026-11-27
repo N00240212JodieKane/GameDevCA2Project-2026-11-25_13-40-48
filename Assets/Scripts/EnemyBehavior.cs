@@ -8,12 +8,18 @@ public class EnemyBehavior : MonoBehaviour
     public List<Transform> Locations = new List<Transform>();
     public Transform Player;
 
+    [Header("Health Settings")]
+    public int MaxHealth = 3;
+    private int _currentHealth;
+
     private int _locationIndex = 0;
     private NavMeshAgent _agent;
-    private bool _isChasing = false; // <-- Added missing variable
+    private bool _isChasing = false;
 
     void Start()
     {
+        _currentHealth = MaxHealth;
+
         GameObject playerObj = GameObject.Find("Player");
         if (playerObj != null)
         {
@@ -31,7 +37,6 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        // <-- Added chase logic in Update()
         if (_isChasing && Player != null)
         {
             _agent.destination = Player.position;
@@ -58,11 +63,38 @@ public class EnemyBehavior : MonoBehaviour
 
     void MoveToNextPatrolLocation()
     {
-        if (Locations.Count == 0)
-            return;
+        if (Locations.Count == 0) return;
 
         _agent.destination = Locations[_locationIndex].position;
         _locationIndex = (_locationIndex + 1) % Locations.Count;
+    }
+
+    public void TakeDamage(int damageAmount)
+    {
+        _currentHealth -= damageAmount;
+        Debug.Log(gameObject.name + " took damage! Remaining health: " + _currentHealth);
+
+        if (_currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Debug.Log(gameObject.name + " defeated!");
+        Destroy(gameObject);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Enemy was hit by: " + collision.gameObject.name);
+
+        if (collision.gameObject.name.Contains("Bullet"))
+        {
+            TakeDamage(1);
+            Destroy(collision.gameObject);
+        }
     }
 
     void OnTriggerEnter(Collider other)
