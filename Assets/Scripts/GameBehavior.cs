@@ -57,7 +57,7 @@ public class GameBehavior : MonoBehaviour
         set
         {
             _playerHP = value;
-            UpdateText(HealthText, _HealthBaseText, HP);
+            Debug.LogFormat("Player Health: {0}", HP);
         }
     }
 
@@ -68,7 +68,7 @@ public class GameBehavior : MonoBehaviour
 
     private void TriggerWin()
     {
-        ProgressText.text = "You've found all the items! You win!";
+        ProgressText.text = "CONGRATS MY FRIENDS YOU WIN!!";
         
         // Show the win button and pause the game
         if (WinButton != null)
